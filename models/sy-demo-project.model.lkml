@@ -1,7 +1,7 @@
 connection: "sy-bigquery-looker_demo"
 
 # include all the views
-include: "/views/*.view"
+include: "/views/bigquery/*.view"
 
 datagroup: sy_demo_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
