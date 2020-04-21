@@ -4,11 +4,16 @@ view: seoul_population {
             year AS year,
             sido as sido,
             gungu  AS gungu,
-            left(dongmyeon, 2) AS dongmyeon ,
+            (case when left(dongmyeon, 2) regexp '[0-9]'
+              then concat(left(dongmyeon, 1), '동')
+                else left(dongmyeon, 2)
+            end) AS dongmyeon ,
             sum( population_total) as population_total,
             sum( korean_total ) as korean_total,
             sum( foreigner_total ) as foreigner_total,
             sum( households_total )  as households_total,
+            sum( korean_female ) as korean_female,
+            sum( korean_male ) as korean_male,
             sum( korean_0_to_4 ) as korean_0_to_4,
             sum( korean_5_to_9 ) as korean_5_to_9,
             sum( korean_10_to_14 ) as korean_10_to_14,
@@ -53,7 +58,10 @@ view: seoul_population {
             sum( foreigner_more_99 ) as foreigner_more_99
           FROM seoul_population
           WHERE year = '2018'
-          group by  year, sido, gungu, left(dongmyeon, 2)
+          group by  year, sido, gungu, (case when left(dongmyeon, 2) regexp '[0-9]'
+                            then concat(left(dongmyeon, 1), '동')
+                          else left(dongmyeon, 2)
+                      end)
            ;;
   }
 
@@ -341,7 +349,6 @@ view: seoul_population {
   measure: population_total_sum {
     type: sum
     sql: ${TABLE}.population_total ;;
-    drill_fields: []
   }
 
   measure: korean_female_sum {
@@ -357,6 +364,36 @@ view: seoul_population {
   measure: korean_total_sum {
     type: sum
     sql: ${TABLE}.korean_total ;;
+  }
+
+  measure: korean_10s_sum {
+    type: sum
+    sql: ${TABLE}.korean_10_to_14+${TABLE}.korean_15_to_19 ;;
+  }
+
+  measure: korean_20s_sum {
+    type: sum
+    sql: ${TABLE}.korean_20_to_24+ ${TABLE}.korean_25_to_29 ;;
+  }
+
+  measure: korean_30s_sum {
+    type: sum
+    sql: ${TABLE}.korean_30_to_34 + ${TABLE}.korean_35_to_39 ;;
+  }
+
+  measure: korean_40s_sum {
+    type: sum
+    sql: ${TABLE}.korean_40_to_44 + ${TABLE}.korean_45_to_49;;
+  }
+
+  measure: korean_50s_sum {
+    type: sum
+    sql: ${TABLE}.korean_50_to_54 + ${TABLE}.korean_55_to_59 ;;
+  }
+
+  measure: korean_60s_sum {
+    type: sum
+    sql: ${TABLE}.korean_60_to_64 + ${TABLE}.korean_65_to_69 ;;
   }
 
 }

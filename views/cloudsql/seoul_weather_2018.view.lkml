@@ -1,5 +1,40 @@
 view: seoul_weather_2018 {
-  sql_table_name: seoul_weather_2018 ;;
+  derived_table: {
+    sql: select a.sido as sido, a.gungu as gungu, a.dong_split as dong, b.date as date, b.hour as hour, b.temperature as temperature, b.rainfall as rainfall
+          from (
+            select sw.sido, sw.gungu, sw.dong_split, sw.dong
+              from (
+                    select a.sido, a.gungu, a.dong_split, a.dong
+                          ,case when concat(@sido, @gungu, @dong) = concat(a.sido, a.gungu, a.dong_split) then @RANK:=@RANK + 1 else @RANK :=1 end as RANKING
+                          ,@sido := a.sido
+                          ,@gungu := a.gungu
+                          ,@dong := a.dong_split
+                    from (
+                      select sido
+                         , gungu
+                         , (case when left(seoul_weather_2018.dong, 2) regexp '[0-9]'
+                                then concat(left(seoul_weather_2018.dong, 1), '동')
+                              else left(seoul_weather_2018.dong, 2)
+                           end) as dong_split
+                         , dong
+                         , count(*)
+                      from seoul_weather_2018
+                      group by sido
+                         , gungu
+                         , (case when left(seoul_weather_2018.dong, 2) regexp '[0-9]'
+                                then concat(left(seoul_weather_2018.dong, 1), '동')
+                              else left(seoul_weather_2018.dong, 2)
+                           end)
+                         , dong
+                    ) a , (SELECT @sido := '', @gungu := '', @dong := '', @RANK := 0) XX
+              order by 1, 2, 3, 4
+              ) sw
+              where sw.ranking = 1) a
+            , seoul_weather_2018 b
+          where a.sido = b.sido
+            and a.gungu = b.gungu
+            and a.dong = b.dong;;
+  }
 
 
   dimension: date {
@@ -77,5 +112,16 @@ view: seoul_weather_2018 {
   measure: count {
     type: count
     drill_fields: []
+  }
+  measure: temperature_avg {
+    type: average
+    sql: ${TABLE}.temperature ;;
+    drill_fields: [sido, gungu, sido, date, hour]
+  }
+
+  measure: rainfall_avg {
+    type: average
+    sql: ${TABLE}.rainfall ;;
+    drill_fields: [sido, gungu, sido, date, hour]
   }
 }

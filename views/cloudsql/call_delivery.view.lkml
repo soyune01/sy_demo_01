@@ -25,10 +25,40 @@ view: call_delivery {
     type: string
     sql: ${TABLE}.date;;
   }
+
+  dimension_group: date {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}.date ;;
+  }
+
+  dimension: day_orderby {
+    type: number
+    sql: CASE WHEN  ${TABLE}.day = '월' THEN 1
+              WHEN  ${TABLE}.day = '화' THEN 2
+              WHEN  ${TABLE}.day = '수' THEN 3
+              WHEN  ${TABLE}.day = '목' THEN 4
+              WHEN  ${TABLE}.day = '금' THEN 5
+              WHEN  ${TABLE}.day = '토' THEN 6
+              WHEN  ${TABLE}.day = '일' THEN 7
+          ELSE 99 END ;;
+  }
+
   dimension: day {
     type: string
     sql: ${TABLE}.day ;;
+    order_by_field: day_orderby
   }
+
 
   dimension: industry_item {
     type: string

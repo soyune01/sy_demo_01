@@ -20,6 +20,7 @@ explore: call_weather_report {
               AND ${call_weather_report.time_tier} = ${seoul_weather_2018.hour};;
        relationship: one_to_one
       }
+  hidden: yes
 }
 
 explore: call_population_report {
@@ -30,16 +31,22 @@ explore: call_population_report {
               AND SUBSTR(${call_population_report.addr_dong}, 0, 2) = ${seoul_population.dongmyeon};;
     relationship: one_to_one
   }
+  hidden: yes
 }
 
 
-explore: call_delivery {}
+explore: call_delivery {
+  hidden: yes
+}
+
 explore: seoul_weather_2018 {
   hidden: yes
 }
 explore: seoul_population {
   hidden: yes
 }
+
+explore: seoul_households {}
 
 # explore: customer {}
 
