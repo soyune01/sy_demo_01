@@ -66,4 +66,9 @@ view: seoul_households {
     type: count
     drill_fields: []
   }
+  measure: sum {
+    type: sum
+    sql: ${TABLE}.total_households ;;
+    drill_fields: [sido, gungu, dongmyeon, year, household_1, households_2, households_3, households_4, households_5, households_6, households_more6]
+  }
 }
