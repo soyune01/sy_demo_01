@@ -1,7 +1,7 @@
 connection: "sy-cloudsql-demos-01"
 
 # include all the views
-include: "/views/**/*.view"
+include: "/views/demo/*.view"
 
 datagroup: sy_demo_looker_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
